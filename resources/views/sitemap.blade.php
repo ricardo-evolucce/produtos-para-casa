@@ -5,42 +5,28 @@
         <loc>{{ $url['loc'] }}</loc>
         <lastmod>{{ \Carbon\Carbon::parse($url['lastmod'])->format('Y-m-d') }}</lastmod>
         <changefreq>
-            @if(isset($url['type']))
-                @switch($url['type'])
-                    @case('homepage')
-                        daily
-                        @break
-                    @case('category')
-                        weekly
-                        @break
-                    @case('product')
-                        weekly
-                        @break
-                    @default
-                        monthly
-                @endswitch
-            @else
-                weekly
-            @endif
+            @php
+                // Define changefreq padrão baseado na URL
+                if(str_contains($url['loc'], '/inicio')) {
+                    echo 'daily';
+                } elseif(str_contains($url['loc'], '/produtos-para-')) {
+                    echo 'weekly';
+                } else {
+                    echo 'monthly';
+                }
+            @endphp
         </changefreq>
         <priority>
-            @if(isset($url['type']))
-                @switch($url['type'])
-                    @case('homepage')
-                        1.0
-                        @break
-                    @case('category')
-                        0.8
-                        @break
-                    @case('product')
-                        0.5
-                        @break
-                    @default
-                        0.5
-                @endswitch
-            @else
-                0.8
-            @endif
+            @php
+                // Define prioridade baseado na URL
+                if(str_contains($url['loc'], '/inicio')) {
+                    echo '1.0';
+                } elseif(str_contains($url['loc'], '/produtos-para-')) {
+                    echo '0.8';
+                } else {
+                    echo '0.5';
+                }
+            @endphp
         </priority>
     </url>
     @endforeach
