@@ -67,13 +67,27 @@ public function store(Request $request)
         'hero_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
     ]);
 
-    // Upload simples da hero image
-    if ($request->hasFile('hero_image')) {
-        $file = $request->file('hero_image');
-        $filename = time() . '.' . $file->getClientOriginalExtension();
-        $file->move(public_path('img'), $filename);
-        $data['hero_image'] = $filename;
+// Upload simples da hero image
+if ($request->hasFile('hero_image')) {
+    $file = $request->file('hero_image');
+    $filename = time() . '.' . $file->getClientOriginalExtension();
+    $path = base_path('img'); // agora aponta para a raiz do projeto
+
+    // cria a pasta se não existir
+    if (!file_exists($path)) {
+        mkdir($path, 0755, true);
     }
+
+    $file->move($path, $filename);
+
+    if (file_exists($path . '/' . $filename)) {
+        $data['hero_image'] = $filename;
+    } else {
+        throw new \Exception('Falha ao salvar a imagem.');
+    }
+}
+
+
 
     $page->update($data);
     $page->products()->sync($request->input('products', []));
