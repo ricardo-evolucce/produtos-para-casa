@@ -6,7 +6,7 @@
         <lastmod>{{ \Carbon\Carbon::parse($url['lastmod'])->format('Y-m-d') }}</lastmod>
         <changefreq>
             @php
-                // Define changefreq padrão baseado na URL
+                // Definindo frequência de atualização automática
                 if(str_contains($url['loc'], '/inicio')) {
                     echo 'daily';
                 } elseif(str_contains($url['loc'], '/produtos-para-')) {
@@ -18,7 +18,7 @@
         </changefreq>
         <priority>
             @php
-                // Define prioridade baseado na URL
+                // Definindo prioridade automática
                 if(str_contains($url['loc'], '/inicio')) {
                     echo '1.0';
                 } elseif(str_contains($url['loc'], '/produtos-para-')) {
