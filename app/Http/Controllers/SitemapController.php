@@ -1,38 +1,44 @@
-{!! '<?xml version="1.0" encoding="UTF-8"?>' !!}
-<urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="https://www.sitemaps.org/schemas/sitemap/0.9 
-                            https://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+<?php
 
-    @foreach($urls as $url)
-    <url>
-        <loc>{{ e($url['loc']) }}</loc>
-        <lastmod>{{ \Carbon\Carbon::parse($url['lastmod'])->format('Y-m-d') }}</lastmod>
-        <changefreq>
-            @php
-                $loc = $url['loc'];
-                if (str_contains($loc, '/inicio')) {
-                    echo 'daily';
-                } elseif (str_contains($loc, '/produtos-para-')) {
-                    echo 'weekly';
-                } else {
-                    echo 'monthly';
-                }
-            @endphp
-        </changefreq>
-        <priority>
-            @php
-                $loc = $url['loc'];
-                if (str_contains($loc, '/inicio')) {
-                    echo '1.0';
-                } elseif (str_contains($loc, '/produtos-para-')) {
-                    echo '0.8';
-                } else {
-                    echo '0.5';
-                }
-            @endphp
-        </priority>
-    </url>
-    @endforeach
+namespace App\Http\Controllers;
 
-</urlset>
+use Illuminate\Http\Response;
+use App\Models\Page;
+use App\Models\Menu;
+
+class SitemapController extends Controller
+{
+    public function index()
+    {
+        $pages = Page::all(); // todas as páginas
+        $menuItems = Menu::with('page')->get(); // itens de menu que linkam para páginas
+
+        $urls = [];
+
+        // Adiciona URLs das páginas
+        foreach ($pages as $page) {
+            $urls[] = [
+                'loc' => url($page->slug),
+                'lastmod' => $page->updated_at->toAtomString(),
+            ];
+        }
+
+        // Adiciona URLs de menus (evita duplicatas)
+        foreach ($menuItems as $item) {
+            if ($item->page) {
+                $loc = url($item->page->slug);
+                if (!in_array($loc, array_column($urls, 'loc'))) {
+                    $urls[] = [
+                        'loc' => $loc,
+                        'lastmod' => $item->page->updated_at->toAtomString(),
+                    ];
+                }
+            }
+        }
+
+        $content = view('sitemap', ['urls' => $urls]);
+
+        return response($content, 200)
+                ->header('Content-Type', 'application/xml');
+    }
+}
