@@ -8,8 +8,7 @@
     <url>
         <loc>{{ e($url['loc']) }}</loc>
         <lastmod>{{ \Carbon\Carbon::parse($url['lastmod'])->format('Y-m-d') }}</lastmod>
-        <changefreq>
-            @php
+        <changefreq>@php
                 $loc = $url['loc'];
                 if (str_contains($loc, '/inicio')) {
                     echo 'daily';
@@ -18,10 +17,8 @@
                 } else {
                     echo 'monthly';
                 }
-            @endphp
-        </changefreq>
-        <priority>
-            @php
+            @endphp</changefreq>
+        <priority>@php
                 $loc = $url['loc'];
                 if (str_contains($loc, '/inicio')) {
                     echo '1.0';
@@ -30,8 +27,7 @@
                 } else {
                     echo '0.5';
                 }
-            @endphp
-        </priority>
+            @endphp</priority>
     </url>
     @endforeach
 
