@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+
+    <link rel="icon" href="img/favicon-2.ico">
+    <link rel="apple-touch-icon" href="img/apple-touch-icon3.png">
+
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="description" content="{{ $page->meta_description }}">
