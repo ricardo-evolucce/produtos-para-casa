@@ -44,6 +44,13 @@
         @error('alt')<small class="text-danger">{{ $message }}</small>@enderror
     </div>
 
+    <div class="form-group">
+    <label for="price">Preço:</label>
+    <input type="number" step="0.01" name="price" id="price" value="{{ old('price') }}" required class="form-control">
+    @error('price')<small class="text-danger">{{ $message }}</small>@enderror
+</div>
+
+
     <button type="submit" class="btn btn-primary">Salvar Produto</button>
 </form>
 @endsection
