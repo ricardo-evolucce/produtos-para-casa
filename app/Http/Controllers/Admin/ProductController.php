@@ -22,22 +22,43 @@ class ProductController extends Controller
     }
 
     // Salvar novo produto no banco
-    public function store(Request $request)
-    {
-        $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-           'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'url' => 'required|url|max:255',
-            'category' => 'required|string|max:100',
-            'price' => 'required|numeric|min:0',
-            'alt' => 'nullable|string|max:255',
-        ]);
+    // Salvar novo produto no banco
+public function store(Request $request)
+{
+    $data = $request->validate([
+        'name' => 'required|string|max:255',
+        'description' => 'nullable|string',
+        'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        'url' => 'required|url|max:255',
+        'category' => 'required|string|max:100',
+        'price' => 'required|numeric|min:0',
+        'alt' => 'nullable|string|max:255',
+    ]);
 
-        Product::create($data);
+    if ($request->hasFile('image')) {
+        $file = $request->file('image');
+        $filename = time() . '.' . $file->getClientOriginalExtension();
 
-        return redirect()->route('admin.products.index')->with('success', 'Product created successfully!');
+        // Caminho da pasta raiz do projeto /img
+        $destinationPath = base_path('img');
+
+        // Cria a pasta se não existir
+        if (!file_exists($destinationPath)) {
+            mkdir($destinationPath, 0777, true);
+        }
+
+        // Move o arquivo
+        $file->move($destinationPath, $filename);
+
+        // Salva o caminho relativo para usar no site
+        $data['image'] = 'img/' . $filename;
     }
+
+    Product::create($data);
+
+    return redirect()->route('admin.products.index')->with('success', 'Produto criado com sucesso!');
+}
+
 
     // Exibir formulário para editar um produto existente
     public function edit(Product $product)
@@ -58,15 +79,20 @@ class ProductController extends Controller
     ]);
 
     if ($request->hasFile('image')) {
-        $file = $request->file('image');
-        $filename = time() . '.' . $file->getClientOriginalExtension();
+    $file = $request->file('image');
+    $filename = time() . '.' . $file->getClientOriginalExtension();
 
-        if (!$file->move(public_path('img'), $filename)) {
-            return back()->withErrors(['image' => 'The image failed to upload.']);
-        }
+    // Caminho raiz do projeto + /img
+    $path = base_path('img');
 
-        $data['image'] = 'img/'.$filename;
+    if (!$file->move($path, $filename)) {
+        return back()->withErrors(['image' => 'The image failed to upload.']);
     }
+
+    // Caminho relativo
+    $data['image'] = 'img/'.$filename;
+}
+
 
     $product->update($data);
 
