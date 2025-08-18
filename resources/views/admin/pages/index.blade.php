@@ -2,7 +2,7 @@
 
 @section('content')
     <h1>Pages</h1>
-
+<a href="/admin/pages/create">Criar</a>
     @if(session('success'))
         <div style="color: green; margin-bottom: 20px;">
             {{ session('success') }}
