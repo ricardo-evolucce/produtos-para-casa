@@ -2,8 +2,8 @@
 <html lang="pt-BR">
 <head>
 
-    <link rel="icon" href="img/favicon-2.ico">
-    <link rel="apple-touch-icon" href="img/apple-touch-icon3.png">
+    <link rel="icon" href="img/favicon/favicon-2.ico">
+    <link rel="apple-touch-icon" href="img/favicon/apple-touch-icon3.png">
 
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
