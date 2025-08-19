@@ -19,7 +19,10 @@ class PageController extends Controller
 
    public function show($slug)
 {
-    $page = Page::with('products')->where('slug', $slug)->firstOrFail();
+    $page = Page::with(['products' => function ($query) {
+    $query->orderBy('id', 'desc'); // mais novo (id maior) primeiro
+}])->where('slug', $slug)->firstOrFail();
+
 
     // Pega até 3 produtos para o schema (ajuste conforme desejar)
     $schemaProducts = $page->products->take(3);
