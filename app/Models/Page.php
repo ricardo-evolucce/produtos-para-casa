@@ -13,4 +13,10 @@ class Page extends Model
     {
         return $this->belongsToMany(Product::class, 'page_product');
     }
+
+    public function sections()
+    {
+        return $this->hasMany(Section::class)->orderBy('order');
+    }
+
 }

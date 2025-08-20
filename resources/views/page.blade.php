@@ -10,24 +10,47 @@
     <meta name="description" content="{{ $page->meta_description }}">
     <meta name="robots" content="index, follow, max-image-preview:large">
 
-    {{-- Dynamic Schema.org for 1 to 3 products --}}
-    @foreach($schemaProducts as $product)
+{{-- Dynamic Schema.org for 1 to 3 products --}}
+@foreach($schemaProducts as $product)
+    <script type="application/ld+json">
+    {!! json_encode([
+        "@context" => "https://schema.org",
+        "@type" => "Product",
+        "name" => $product->name,
+        "image" => asset('img/' . $product->image),
+        "description" => $product->description,
+        "offers" => [
+            "@type" => "Offer",
+            "priceCurrency" => "BRL",
+            "price" => number_format($product->price, 2, '.', ''),
+            "availability" => "https://schema.org/InStock"
+        ]
+    ], JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT) !!}
+    </script>
+@endforeach
+
+{{-- Dynamic Schema.org para FAQ --}}
+@foreach($page->sections as $section)
+    @if($section->type === 'faq')
         <script type="application/ld+json">
         {!! json_encode([
             "@context" => "https://schema.org",
-            "@type" => "Product",
-            "name" => $product->name,
-            "image" => asset('img/' . $product->image),
-            "description" => $product->description,
-            "offers" => [
-                "@type" => "Offer",
-                "priceCurrency" => "BRL",
-                "price" => number_format($product->price, 2, '.', ''),
-                "availability" => "https://schema.org/InStock"
-            ]
+            "@type" => "FAQPage",
+            "mainEntity" => collect($section->content['items'] ?? [])->map(function($item) {
+                return [
+                    "@type" => "Question",
+                    "name" => $item['question'],
+                    "acceptedAnswer" => [
+                        "@type" => "Answer",
+                        "text" => $item['answer']
+                    ]
+                ];
+            })->values()->all()
         ], JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT) !!}
         </script>
-    @endforeach
+    @endif
+@endforeach
+
 
     <link rel="stylesheet" href="{{ asset('css/style2.css') }}">
     <title>{{ $page->title }}</title>
@@ -70,6 +93,11 @@
         @endif
     </section>
 
+
+
+
+
+
     {{-- Product Grid --}}
     <div class="product-grid">
         @foreach($page->products as $product)
@@ -87,6 +115,56 @@
     </div>
 
     {{-- Rodapé com Menu Especial --}}
+
+    @foreach($page->sections as $section)
+    @if($section->type === 'faq')
+        <section class="section-faq">
+            <h2>Perguntas Frequentes</h2>
+            <div class="faq-list">
+                @foreach($section->content['items'] ?? [] as $item)
+                    <div class="faq">
+                        <button class="faq-question">{{ $item['question'] }}</button>
+                        <div class="faq-answer">
+                            <p>{{ $item['answer'] }}</p>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </section>
+
+        {{-- CSS inline para garantir --}}
+        <style>
+            .section-faq { max-width: 800px; margin: 50px auto; padding: 0 20px; }
+            .section-faq h2 { font-size: 2rem; margin-bottom: 20px; text-align: center; color: #333; }
+            .faq { border-bottom: 1px solid #e0e0e0; }
+            .faq-question {
+                width: 100%; background: #f7f7f7; border: none; padding: 15px 20px;
+                text-align: left; font-size: 1.1rem; font-weight: 500; cursor: pointer;
+                outline: none; transition: background 0.2s; display: flex; justify-content: space-between; align-items: center;
+            }
+            .faq-question:hover { background: #ececec; }
+            .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.3s ease, padding 0.3s ease; padding: 0 20px; }
+            .faq-answer p { margin: 15px 0; line-height: 1.6; color: #555; }
+            .faq.open .faq-answer { max-height: 500px; padding: 10px 20px 20px; }
+            .faq-question::after { content: '+'; font-size: 1.2rem; transition: transform 0.3s; }
+            .faq.open .faq-question::after { transform: rotate(45deg); }
+        </style>
+
+        {{-- JS accordion --}}
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                document.querySelectorAll('.faq').forEach(faq => {
+                    const btn = faq.querySelector('.faq-question');
+                    btn.addEventListener('click', () => {
+                        faq.classList.toggle('open');
+                    });
+                });
+            });
+        </script>
+    @endif
+@endforeach
+
+
 <footer class="footer">
     <ul class="footer-links">
         @foreach(getMenu('rodape') as $item)
@@ -106,6 +184,8 @@ document.addEventListener('DOMContentLoaded', function () {
     nav.classList.toggle('active');
   });
 });
+
+
 </script>
 
 
