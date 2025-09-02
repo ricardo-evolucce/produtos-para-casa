@@ -101,7 +101,7 @@
     {{-- Product Grid --}}
     <div class="product-grid">
         @foreach($page->products as $product)
-            <a href="{{ $product->url }}">
+            <a href="{{ $product->url }}" rel="nofollow sponsored">
                 <div class="product-card" data-category="{{ $product->category }}" data-price="{{ $product->price }}">
                     <img src="{{ asset('/' . $product->image) }}" alt="{{ $product->alt ?? $product->name }}" />
                     <h4>{{ $product->name }}</h4>
