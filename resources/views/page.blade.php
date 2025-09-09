@@ -118,12 +118,12 @@
 
     @foreach($page->sections as $section)
     @if($section->type === 'faq')
-        <section class="section-faq">
+                <section class="section-faq">
             <h2>Perguntas Frequentes</h2>
             <div class="faq-list">
                 @foreach($section->content['items'] ?? [] as $item)
                     <div class="faq">
-                        <button class="faq-question">{{ $item['question'] }}</button>
+                        <h3 class="faq-question">{{ $item['question'] }}</h3>
                         <div class="faq-answer">
                             <p>{{ $item['answer'] }}</p>
                         </div>
