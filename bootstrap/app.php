@@ -15,6 +15,10 @@ $app = new Illuminate\Foundation\Application(
     $_ENV['APP_BASE_PATH'] ?? dirname(__DIR__)
 );
 
+// Força o Laravel a carregar o .env de outro lugar
+$app->useEnvironmentPath(dirname(__DIR__, 2)); // aqui define a pasta do .env
+$app->loadEnvironmentFrom('.env'); // nome do arquivo (caso queira renomear)
+
 $app->bind('path.public', function() {
     return base_path();
 });
